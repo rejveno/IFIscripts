@@ -64,6 +64,27 @@ def parse_manifest(manifest, log_name_source):
         )
     return manifest_dict, missing_files_list
 
+def check_extra_files(file1, file2, log_name_source):
+    '''
+    Are there any extra files in the destination directory?
+    '''
+    with open(file1, 'r') as file1_manifest:
+        sourcelist = file1_manifest.readlines()
+    with open(file2, 'r') as file2_manifest:
+        destlist = file2_manifest.readlines()
+    destlist_files = []
+    sourcelist_files = []
+    for dest_files in destlist:
+        destlist_files.append(dest_files[32:])
+    for source_files in sourcelist:
+        sourcelist_files.append(source_files[32:])
+    for i in destlist_files:
+        if i not in sourcelist_files:
+            print('%s is in your destination manifest but is not in the source manifest' % i.rstrip())
+            generate_log(
+                log_name_source,
+'ERROR = %s is in your destination manifest but is not in the source manifest' % i.rstrip())
+
 def validate(manifest_dict, manifest, log_name_source, missing_files_list):
     '''
     Validates the files listed in the checksum manifest.
